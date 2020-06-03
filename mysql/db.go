@@ -124,7 +124,7 @@ func (d *DB) RegCacheableDB(ormStructPtr Cacheable, cacheExpiration time.Duratio
 
 	if len(priCols) == 0 {
 		erpc.Infof("RegCacheableDB(): table '%s.%s' has no primary key", d.dbConfig.Database, tableName)
-		//return nil, fmt.Errorf("RegCacheableDB(): table '%s.%s' has no primary key", d.dbConfig.Database, tableName)
+		return nil, fmt.Errorf("RegCacheableDB(): table '%s.%s' has no primary key", d.dbConfig.Database, tableName)
 	}
 	sort.Strings(priCols)
 
