@@ -10,15 +10,15 @@ import (
 
 func main() {
 	app := cli.NewApp()
-	app.Name = "Micro project aids"
-	app.Version = "6.1.1"
+	app.Name = "XModel"
+	app.Version = "v1.0.0"
 	app.Author = "xiaoenai"
-	app.Usage = "a deployment tools of tp-micro frameware"
+	app.Usage = "a deployment tools of xmodel frameware"
 
 	// new a project
 	newCom := cli.Command{
 		Name:  "gen",
-		Usage: "Generate a tp-micro project",
+		Usage: "Generate a xmodel code",
 		Flags: []cli.Flag{
 			cli.StringFlag{
 				Name:  "app_path, p",
@@ -28,61 +28,10 @@ func main() {
 				Name:  "force, f",
 				Usage: "Forced to rebuild the whole project",
 			},
-			cli.BoolFlag{
-				Name:  "newdoc",
-				Usage: "Rebuild the README.md",
-			},
 		},
 		Before: initProject,
 		Action: func(c *cli.Context) error {
-			create.CreateProject(c.Bool("force"), c.Bool("newdoc"))
-			return nil
-		},
-	}
-
-	// new a README.md
-	newdocCom := cli.Command{
-		Name:  "newdoc",
-		Usage: "Generate a tp-micro project README.md",
-		Flags: []cli.Flag{
-			cli.StringFlag{
-				Name:  "app_path, p",
-				Usage: "The path(relative/absolute) of the project",
-			},
-		},
-		Before: initProject,
-		Action: func(c *cli.Context) error {
-			create.CreateDoc()
-			return nil
-		},
-	}
-
-	// run a project
-	runCom := cli.Command{
-		Name:  "run",
-		Usage: "Compile and run gracefully (monitor changes) an any existing go project",
-		UsageText: `micro run [options] [arguments...]
- or
-   micro run [options except -app_path] [arguments...] {app_path}`,
-		Flags: []cli.Flag{
-			cli.StringSliceFlag{
-				Name:  "watch_exts, x",
-				Value: (*cli.StringSlice)(&[]string{".go", ".ini", ".yaml", ".toml", ".xml"}),
-				Usage: "Specified to increase the listening file suffix",
-			},
-			cli.StringSliceFlag{
-				Name:  "notwatch, n",
-				Value: (*cli.StringSlice)(&[]string{}),
-				Usage: "Not watch files or directories",
-			},
-			cli.StringFlag{
-				Name:  "app_path, p",
-				Usage: "The path(relative/absolute) of the project",
-			},
-		},
-		Before: initProject,
-		Action: func(c *cli.Context) error {
-			run.RunProject(c.StringSlice("watch_exts"), c.StringSlice("notwatch"))
+			create.CreateProject(c.Bool("force"))
 			return nil
 		},
 	}
@@ -160,7 +109,7 @@ func main() {
 		},
 	}
 
-	app.Commands = []cli.Command{newCom, newdocCom, runCom, tplCom}
+	app.Commands = []cli.Command{newCom, tplCom}
 	app.Run(os.Args)
 }
 
