@@ -9,8 +9,9 @@ import (
 	"os"
 	"strings"
 
+	"github.com/xiaoenai/glog"
+
 	"github.com/go-sql-driver/mysql"
-	"github.com/henrylee2cn/erpc/v6"
 	"github.com/henrylee2cn/goutil"
 	"github.com/xiaoenai/xmodel/cmd/info"
 	"golang.org/x/crypto/ssh"
@@ -58,13 +59,13 @@ func AddTableStructToTpl(cfg ConnConfig) {
 		db, err = sql.Open("mysql", cfg.MysqlConfig.ConnString())
 	}
 	if err != nil {
-		erpc.Fatalf("[XModel] op driver: %s", err.Error())
+		glog.Fatalf("[XModel] op driver: %s", err.Error())
 	}
 
 	os.MkdirAll(info.AbsPath(), os.FileMode(0755))
 	err = os.Chdir(info.AbsPath())
 	if err != nil {
-		erpc.Fatalf("[XModel] Jump working directory failed: %v", err)
+		glog.Fatalf("[XModel] Jump working directory failed: %v", err)
 	}
 
 	// read temptale file
@@ -101,7 +102,7 @@ func AddTableStructToTpl(cfg ConnConfig) {
 	for _, tabName := range cfg.Tables {
 		tb, hasTimeImport, err := parseTable(db, tabName)
 		if err != nil {
-			erpc.Fatalf("[XModel] parse table: %s", err.Error())
+			glog.Fatalf("[XModel] parse table: %s", err.Error())
 		}
 		if m[tb.name] {
 			continue
@@ -143,12 +144,12 @@ func AddTableStructToTpl(cfg ConnConfig) {
 	// write template file
 	f, err := os.OpenFile(ModelTpl, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, os.ModePerm)
 	if err != nil {
-		erpc.Fatalf("[XModel] Create files error: %v", err)
+		glog.Fatalf("[XModel] Create files error: %v", err)
 	}
 	defer f.Close()
 	f.Write(formatSource(b))
 
-	erpc.Infof("Added mysql model struct code to project template!")
+	glog.Infof("Added mysql model struct code to project template!")
 }
 
 func parseTable(db *sql.DB, tableName string) (tb *structType, hasTimeImport bool, err error) {
@@ -201,11 +202,11 @@ func parseTable(db *sql.DB, tableName string) (tb *structType, hasTimeImport boo
 		deletedTs = deletedTs || isDefaultField(f, "DeletedTs", "int64")
 	}
 	if !(updatedAt && createdAt && deletedTs) {
-		erpc.Warnf("Generated struct fields is not in conformity with the table fields: %s", tableName)
+		glog.Warnf("Generated struct fields is not in conformity with the table fields: %s", tableName)
 	}
 	newTabName := goutil.SnakeString(tb.name)
 	if newTabName != tableName {
-		erpc.Warnf("Generated table name is not in conformity with the table name: new: %s, raw: %s", newTabName, tableName)
+		glog.Warnf("Generated table name is not in conformity with the table name: new: %s, raw: %s", newTabName, tableName)
 	}
 	return
 }

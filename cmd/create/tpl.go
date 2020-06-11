@@ -152,7 +152,7 @@ import (
 	"database/sql"
 	"unsafe"
 
-	"github.com/henrylee2cn/erpc/v6"
+	"github.com/xiaoenai/glog"
 	"github.com/henrylee2cn/goutil/coarsetime"
 	"github.com/xiaoenai/xmodel/mysql"
 	"github.com/xiaoenai/xmodel/sqlx"
@@ -288,7 +288,7 @@ func Upsert{{.Name}}(_{{.LowerFirstLetter}} *{{.Name}}, _updateFields []string, 
 	}
 	err = {{.LowerFirstName}}DB.DeleteCache(_{{.LowerFirstLetter}})
 	if err != nil {
-		erpc.Errorf("%s", err.Error())
+		glog.Errorf("%s", err.Error())
 	}
 	return {{if .IsDefaultPrimary}}_{{.LowerFirstLetter}}{{range .PrimaryFields}}.{{.Name}}{{end}},{{end}}nil
 }
@@ -327,7 +327,7 @@ func Update{{.Name}}ByPrimary(_{{.LowerFirstLetter}} *{{.Name}}, _updateFields [
 	}
 	err = {{.LowerFirstName}}DB.DeleteCache(_{{.LowerFirstLetter}})
 	if err != nil {
-		erpc.Errorf("%s", err.Error())
+		glog.Errorf("%s", err.Error())
 	}
 	return nil
 }
@@ -366,7 +366,7 @@ func Update{{$.Name}}By{{.Name}}(_{{$.LowerFirstLetter}} *{{$.Name}}, _updateFie
 	}
 	err = {{$.LowerFirstName}}DB.DeleteCache(_{{$.LowerFirstLetter}},"{{.ModelName}}")
 	if err != nil {
-		erpc.Errorf("%s", err.Error())
+		glog.Errorf("%s", err.Error())
 	}
 	return nil
 }
@@ -401,7 +401,7 @@ func Delete{{.Name}}ByPrimary({{range .PrimaryFields}}_{{.ModelName}} {{.Typ}}, 
 		{{range .PrimaryFields}}{{.Name}}:_{{.ModelName}},
 		{{end}} })
 	if err != nil {
-		erpc.Errorf("%s", err.Error())
+		glog.Errorf("%s", err.Error())
 	}
 	return nil
 }
@@ -435,7 +435,7 @@ func Delete{{$.Name}}By{{.Name}}(_{{.ModelName}} {{.Typ}}, deleteHard bool, tx .
 		{{.Name}}:_{{.ModelName}},
 		},"{{.ModelName}}")
 	if err != nil {
-		erpc.Errorf("%s", err.Error())
+		glog.Errorf("%s", err.Error())
 	}
 	return nil
 }
@@ -532,12 +532,9 @@ import (
 
 	"github.com/henrylee2cn/goutil/coarsetime"
 	"github.com/xiaoenai/xmodel/mongo"
-	"github.com/henrylee2cn/erpc/v6"
 
 	"${import_prefix}/args"
 )
-
-var _ = erpc.Errorf
 
 {{.Doc}}type {{.Name}} args.{{.Name}}
 
@@ -587,7 +584,7 @@ func Upsert{{$.Name}}By{{.Name}}({{.ModelName}} {{.Typ}}, updater mongo.M) error
 		// Del cache
 		err2 := {{$.LowerFirstName}}DB.DeleteCache(_{{$.LowerFirstLetter}}, "{{.ModelName}}","deleted_ts")
 		if err2 != nil {
-			erpc.Errorf("DeleteCache -> err:%s", err2)
+			glog.Errorf("DeleteCache -> err:%s", err2)
 		}
 	}
 
@@ -701,7 +698,7 @@ func Delete{{$.Name}}By{{.Name}}({{.ModelName}} {{.Typ}}, deleteHard bool) error
 		// Del cache
 		err2 := {{$.LowerFirstName}}DB.DeleteCache(_{{$.LowerFirstLetter}}, "{{.ModelName}}","deleted_ts")
 		if err2 != nil {
-			erpc.Errorf("DeleteCache -> err:%s", err2)
+			glog.Errorf("DeleteCache -> err:%s", err2)
 		}
 	}
 	return err
@@ -716,7 +713,7 @@ replace github.com/coreos/go-systemd => github.com/coreos/go-systemd/v22 v22.0.0
 
 require (
 	github.com/henrylee2cn/cfgo v0.0.0-20180417024816-e6c3cc325b21
-	github.com/henrylee2cn/erpc/v6 v6.3.1
 	github.com/henrylee2cn/goutil v0.0.0-20191202093501-834eaf50f6fe
+	github.com/xiaoenai/glog v0.0.0-20200611142840-66249c007189
 )
 `

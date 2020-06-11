@@ -11,7 +11,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/henrylee2cn/erpc/v6"
+	"github.com/xiaoenai/glog"
+
 	"github.com/henrylee2cn/goutil"
 	"github.com/xiaoenai/xmodel/cmd/create/structtag"
 )
@@ -73,13 +74,13 @@ func newTplInfo(tplBytes []byte) *tplInfo {
 	fset := token.NewFileSet()
 	file, err := parser.ParseFile(fset, "", tplBytes, parser.ParseComments)
 	if err != nil {
-		erpc.Fatalf("[XModel] %v", err)
+		glog.Fatalf("[XModel] %v", err)
 	}
 	return &tplInfo{
-		src:     tplBytes,
-		fileSet: fset,
-		astFile: file,
-		doc:     addSlash(file.Doc.Text()),
+		src:               tplBytes,
+		fileSet:           fset,
+		astFile:           file,
+		doc:               addSlash(file.Doc.Text()),
 		models:            new(models),
 		realStructTypeMap: make(map[string]*structType),
 	}
@@ -89,7 +90,7 @@ func (t *tplInfo) Parse() *tplInfo {
 	t.parseImports()
 	ok := t.hasType(emptyStructType.name)
 	if ok {
-		erpc.Fatalf("[XModel] Keep structure name cannot be used: %s", emptyStructType.name)
+		glog.Fatalf("[XModel] Keep structure name cannot be used: %s", emptyStructType.name)
 	}
 	t.collectStructs()
 	t.initModelStructs()
@@ -115,7 +116,7 @@ func (t *tplInfo) getCodeBlock(i interface{}) string {
 	var dst bytes.Buffer
 	err := format.Node(&dst, t.fileSet, i)
 	if err != nil {
-		erpc.Fatalf("[XModel] %v", err)
+		glog.Fatalf("[XModel] %v", err)
 	}
 	return dst.String()
 }
@@ -234,7 +235,6 @@ func (t *tplInfo) lookupTypeFields(name string) ([]*field, bool) {
 	}
 	return nil, false
 }
-
 
 func (t *tplInfo) initModelStructs() {
 	for _, s := range t.models.mysql {
@@ -394,14 +394,14 @@ func (s *structType) isInvildName() bool {
 
 func (s structType) init(t *tplInfo) *structType {
 	if !s.isInvildName() {
-		erpc.Fatalf("[XModel] Unexported struct name: %s", s.name)
+		glog.Fatalf("[XModel] Unexported struct name: %s", s.name)
 	}
 	for _, v := range s.node.Fields.List {
 		f := new(field)
 		if len(v.Names) > 0 {
 			f.Name = v.Names[0].Name
 			if !goutil.IsExportedName(f.Name) {
-				erpc.Fatalf("[XModel] Unexported field name: %s.%s", s.name, f.Name)
+				glog.Fatalf("[XModel] Unexported field name: %s.%s", s.name, f.Name)
 			}
 		}
 		f.Typ = t.getCodeBlock(v.Type)
@@ -409,7 +409,7 @@ func (s structType) init(t *tplInfo) *structType {
 			f.anonymous = true
 			f.Name = strings.TrimPrefix(f.Typ, "*")
 			if !goutil.IsExportedName(f.Name) {
-				erpc.Fatalf("[XModel] Unexported anonymous field: %s.%s", s.name, f.Typ)
+				glog.Fatalf("[XModel] Unexported anonymous field: %s.%s", s.name, f.Typ)
 			}
 		}
 		f.doc = addSlash(v.Doc.Text())
@@ -454,7 +454,7 @@ func (s *structType) rangeTags(fns ...func(tags *structtag.Tags, f *field, anony
 			}
 			tags, err := structtag.Parse(strings.TrimSpace(strings.Trim(v.tag, "`")))
 			if err != nil {
-				erpc.Fatalf("[XModel] %s.%s: %s", s.name, logName, err.Error())
+				glog.Fatalf("[XModel] %s.%s: %s", s.name, logName, err.Error())
 			}
 			if !fn(tags, v, len(v.Name) == 0) {
 				break
@@ -513,7 +513,7 @@ func (t *tplInfo) sortStructs() {
 			v := t.realStructTypes[i]
 			if v.name == name {
 				if len(v.modelStyle) > 0 {
-					erpc.Fatalf("[XModel] %s: multiple specified model style", v.name)
+					glog.Fatalf("[XModel] %s: multiple specified model style", v.name)
 				}
 				t.models.mysql = append(t.models.mysql, v)
 				v.modelStyle = "mysql"
@@ -526,7 +526,7 @@ func (t *tplInfo) sortStructs() {
 			v := t.realStructTypes[i]
 			if v.name == name {
 				if len(v.modelStyle) > 0 {
-					erpc.Fatalf("[XModel] %s: multiple specified model style", v.name)
+					glog.Fatalf("[XModel] %s: multiple specified model style", v.name)
 				}
 				t.models.mongo = append(t.models.mongo, v)
 				v.modelStyle = "mongo"
