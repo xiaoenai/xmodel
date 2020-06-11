@@ -7,14 +7,14 @@ import (
 	"strings"
 	"time"
 
+	"github.com/xiaoenai/glog"
+
 	"github.com/xiaoenai/xmodel/redis"
 
 	"github.com/henrylee2cn/goutil"
 	"github.com/henrylee2cn/goutil/errors"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-
-	"github.com/henrylee2cn/erpc/v6"
 )
 
 // GO 1.9 alias
@@ -248,7 +248,7 @@ func (c *CacheableDB) CacheGet(destStructPtr Cacheable, fields ...string) error 
 
 		key, err = c.createPrikey(destStructPtr)
 		if err != nil {
-			erpc.Errorf("CacheGet(): createPrikey: %s", err.Error())
+			glog.Errorf("CacheGet(): createPrikey: %s", err.Error())
 			err = nil
 			return
 		}
@@ -260,7 +260,7 @@ func (c *CacheableDB) CacheGet(destStructPtr Cacheable, fields ...string) error 
 			err = c.Cache.Set(cacheKey.Key, key, c.cacheExpiration).Err()
 		}
 		if err != nil {
-			erpc.Errorf("CacheGet(): %s", err.Error())
+			glog.Errorf("CacheGet(): %s", err.Error())
 			err = nil
 		}
 	})
@@ -290,7 +290,7 @@ func (c *CacheableDB) getFirstCache(key string, destStructPtr Cacheable) (bool, 
 		if err == nil {
 			return true, nil
 		}
-		erpc.Errorf("CacheGet(): %s", err.Error())
+		glog.Errorf("CacheGet(): %s", err.Error())
 
 	} else if !redis.IsRedisNil(err) {
 		return false, err
@@ -391,7 +391,7 @@ func (c *CacheableDB) WitchCollection(s func(*Collection) error) error {
 	defer func() {
 		session.Close()
 		if err := recover(); err != nil {
-			erpc.Errorf("Mongodb close session err:%s", err)
+			glog.Errorf("Mongodb close session err:%s", err)
 		}
 	}()
 	collection := c.DB.DB(c.DB.dbConfig.Database).C(c.tableName)
