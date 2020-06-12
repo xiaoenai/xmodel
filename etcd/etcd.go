@@ -17,12 +17,10 @@ package etcd
 
 import (
 	"time"
-	"unsafe"
 
 	"github.com/coreos/etcd/clientv3"
 	"github.com/coreos/etcd/clientv3/concurrency"
 	"github.com/henrylee2cn/cfgo"
-	"github.com/xiaoenai/tp-micro/v6/model/etcd"
 )
 
 // EasyConfig ETCD client config
@@ -32,10 +30,6 @@ type EasyConfig struct {
 	Username    string        `yaml:"username"     ini:"username"     comment:"user name for authentication"`
 	Password    string        `yaml:"password"     ini:"password"     comment:"password for authentication"`
 	init        bool
-}
-
-func (c *EasyConfig) ToMicroEtcd() *etcd.EasyConfig {
-	return (*etcd.EasyConfig)(unsafe.Pointer(c))
 }
 
 // Reload Bi-directionally synchronizes config between YAML file and memory.
