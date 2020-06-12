@@ -36,8 +36,8 @@ GLOBAL OPTIONS:
 
 ## xmodel gen
 
-- 执行`xmoel gen`生成模板文件
-- 模板文件配置在__model__tpl__.go中，根据数据库表在模板中编写对应的结构体，将结构体名添加到`__MYSQL_MODEL__`或`__MONGO_MODEL__`中执行`xmoel gen`命令生成
+- 执行`xmodel gen`生成模板文件
+- 模板文件配置在`__model__tpl__.go`中，根据数据库表在模板中编写对应的结构体，将结构体名添加到`__MYSQL_MODEL__`或`__MONGO_MODEL__`中执行`xmodel gen`命令生成
 
 ```
 .
