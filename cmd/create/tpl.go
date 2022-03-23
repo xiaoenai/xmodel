@@ -32,7 +32,6 @@ var tplFiles = map[string]string{
 
 import (
 	"strings"
-	"time"
 
 	"github.com/xiaoenai/xmodel/mongo"
 	"github.com/xiaoenai/xmodel/mysql"
@@ -47,7 +46,6 @@ var mongoHandler = mongo.NewPreDB()
 
 var (
 	redisClient *redis.Client
-	cacheExpire time.Duration
 )
 
 
