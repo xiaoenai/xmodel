@@ -115,7 +115,7 @@ func (p *Project) gen() {
 	p.genConstFile()
 	p.genTypeFile()
 	p.genModelFile()
-	p.genAndWriteGoModFile()
+	//p.genAndWriteGoModFile()
 }
 
 func (p *Project) genAndWriteGoModFile() {
