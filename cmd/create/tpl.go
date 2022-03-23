@@ -523,7 +523,6 @@ func Count{{.Name}}ByWhere(whereCond string, arg ...interface{}) (int64, error) 
 const mongoModelTpl = `package model
 
 import (
-	"time"
 	"unsafe"
 
 	"github.com/henrylee2cn/goutil/coarsetime"
