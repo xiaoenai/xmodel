@@ -7,8 +7,6 @@ package __TPL__
 // __MYSQL_MODEL__ create mysql model
 type __MYSQL_MODEL__ struct {
 	User
-	Log
-	Device
 }
 
 // __MONGO_MODEL__ create mongodb model
@@ -21,14 +19,6 @@ type User struct {
 	Id   int64  ` + "`key:\"pri\"`" + `
 	Name string ` + "`key:\"uni\"`" + `
 	Age  int32
-}
-
-type Log struct {
-	Text string
-}
-
-type Device struct {
-	UUID string ` + "`key:\"pri\"`" + `
 }
 
 type Meta struct {
@@ -62,8 +52,7 @@ var (
 
 
 // Init initializes the model packet.
-func Init(mysqlConfig *mysql.Config, mongoConfig *mongo.Config, redisConfig *redis.Config, _cacheExpire time.Duration) error {
-	cacheExpire=_cacheExpire
+func Init(mysqlConfig *mysql.Config, mongoConfig *mongo.Config, redisConfig *redis.Config) error {
 	var err error
 	if redisConfig != nil {
 		redisClient, err = redis.NewClient(redisConfig)
@@ -136,6 +125,13 @@ func insertZeroDeletedTsField(whereCond string) string {
 `,
 
 	"args/const.gen.go": `package args
+
+import (
+	"time"
+)
+// SQL CacheExpire
+const CacheExpire = 24 * time.Hour
+
 ${const_list}
 `,
 
@@ -195,7 +191,7 @@ func (_{{.LowerFirstLetter}} *{{.Name}}) isZeroPrimaryKey() bool {
 	{{end}}return true
 }
 
-var {{.LowerFirstName}}DB, _ = mysqlHandler.RegCacheableDB(new({{.Name}}), cacheExpire, ` + "args.{{.Name}}Sql" + `)
+var {{.LowerFirstName}}DB, _ = mysqlHandler.RegCacheableDB(new({{.Name}}), args.CacheExpire, ` + "args.{{.Name}}Sql" + `)
 
 // Get{{.Name}}DB returns the {{.Name}} DB handler.
 func Get{{.Name}}DB() *mysql.CacheableDB {
@@ -561,7 +557,7 @@ func (_{{.LowerFirstLetter}} *{{.Name}}) isZeroPrimaryKey() bool {
 	{{end}}return true
 }
 
-var {{.LowerFirstName}}DB, _ = mongoHandler.RegCacheableDB(new({{.Name}}), time.Hour*24)
+var {{.LowerFirstName}}DB, _ = mongoHandler.RegCacheableDB(new({{.Name}}), args.CacheExpire)
 
 // Get{{.Name}}DB returns the {{.Name}} DB handler.
 func Get{{.Name}}DB() *mongo.CacheableDB {
